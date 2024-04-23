@@ -1,9 +1,70 @@
+use core::num;
 use std::env;
+use std::io::Read;
 
 fn stl_to_gltf(path_to_stl: &String, path_to_output: &String, is_binary: bool) {
     println!("path_to_stl: {}", path_to_stl);
     println!("path_to_output: {}", path_to_output);
     println!("is_binary: {}", is_binary);
+
+    // ヘッダ情報
+    let header_bytes = 80;
+    let unsigned_long_int_bytes = 4;
+    let float_bytes = 4;
+    let vec3_bytes = 4 * 3;
+    let spacer_bytes = 2;
+    let num_vertices_in_face = 3;
+
+    let mut vertices: Vec<[f32; 3]> = Vec::new();
+    let mut indices: Vec<f32> = Vec::new();
+
+    let mut path_to_output_bin = String::new();
+    let mut path_to_output_gltf = String::new();
+
+    // 出力ファイルパス
+    if !is_binary {
+        path_to_output_bin = format!("{}/{}", path_to_output, "out.bin");
+        path_to_output_gltf = format!("{}/{}", path_to_output, "out.gltf");
+    } else {
+        path_to_output_bin = path_to_output.to_string();
+    }
+    println!("path_to_output_bin: {}", path_to_output_bin);
+    println!("path_to_output_gltf: {}", path_to_output_gltf);
+
+    // STLファイルをバイナリモードで開く
+    let file = std::fs::File::open(path_to_stl).expect("Failed to open file");
+    let mut reader = std::io::BufReader::new(file);
+
+    // ファイルのバイナリを読み込む
+    let mut buffer = Vec::new();
+    reader
+        .read_to_end(&mut buffer)
+        .expect("Failed to read file");
+
+    // バイナリを16進数でprint
+    for i in 0..buffer.len() {
+        print!("{:02x} ", buffer[i]);
+    }
+
+    println!("");
+
+    // 先頭からheader_bytesを消去して，16進数でprint
+    buffer = buffer.split_off(header_bytes);
+    for i in 0..buffer.len() {
+        print!("{:02x} ", buffer[i]);
+    }
+
+    println!("");
+
+    let num_faces_bytes = buffer[0..unsigned_long_int_bytes].to_vec();
+    let number_faces = u32::from_le_bytes([
+        num_faces_bytes[0],
+        num_faces_bytes[1],
+        num_faces_bytes[2],
+        num_faces_bytes[3],
+    ]);
+
+    println!("number_faces: {}", number_faces);
 }
 
 fn main() {

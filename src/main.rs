@@ -62,9 +62,15 @@ fn stl_to_gltf(path_to_stl: &String, path_to_output: &String, is_binary: bool) {
         num_faces_bytes[1],
         num_faces_bytes[2],
         num_faces_bytes[3],
-    ]);
+    ]) as usize;
 
     println!("number_faces: {}", number_faces);
+
+    // STLファイルのバイト数を取得
+    let stl_assume_bytes = header_bytes
+        + unsigned_long_int_bytes
+        + number_faces * (vec3_bytes * 3 + spacer_bytes + vec3_bytes);
+    println!("stl_assume_bytes: {}", stl_assume_bytes);
 }
 
 fn main() {

@@ -1,5 +1,11 @@
 use std::env;
 
+fn stl_to_gltf(path_to_stl: &String, path_to_output: &String, is_binary: bool) {
+    println!("path_to_stl: {}", path_to_stl);
+    println!("path_to_output: {}", path_to_output);
+    println!("is_binary: {}", is_binary);
+}
+
 fn main() {
     println!("Start!");
     let args: Vec<String> = env::args().collect();
@@ -12,12 +18,12 @@ fn main() {
         return;
     }
 
-    let path_to_stl = &args[1];
-    let path_to_output = &args[2];
+    let path_to_stl: &String = &args[1];
+    let path_to_output: &String = &args[2];
 
     // バイナリモードで出力するかどうか
-    let mut is_binary = false; // Make the variable mutable
-                               // is_binary変数を定義
+    let mut is_binary: bool = false; // Make the variable mutable
+                                     // is_binary変数を定義
     if args.len() > 3 {
         is_binary = true;
     }
@@ -44,7 +50,5 @@ fn main() {
         }
     }
 
-    println!("path_to_stl: {}", path_to_stl);
-    println!("path_to_output: {}", path_to_output);
-    println!("is_binary: {}", is_binary);
+    stl_to_gltf(path_to_stl, path_to_output, is_binary)
 }
